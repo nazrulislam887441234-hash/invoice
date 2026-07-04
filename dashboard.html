@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Ghoti Market</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        :root { --primary: #1a2a3a; --gold: #c5a059; --bg: #f4f7f6; }
+        body { font-family: 'Hind Siliguri', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; }
+        .box { background: white; padding: 30px; border-radius: 25px; width: 100%; max-width: 450px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 5px solid var(--gold); }
+        .user-profile { text-align: center; margin-bottom: 25px; }
+        .user-profile img { width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--gold); object-fit: cover; }
+        h2 { color: var(--primary); margin-bottom: 20px; text-align: center; font-size: 22px; }
+        .info-item { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; font-size: 13px; color: #777; }
+        .data-val { background: #f9f9f9; padding: 12px; border-radius: 10px; margin-top: 5px; font-weight: 600; color: #333; border: 1px solid #eee; }
+        
+        /* বাটন স্টাইল */
+        .btn-container { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .receipt-btn { background: #27ae60; color: white; width: 100%; padding: 14px; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; text-decoration: none; text-align: center; }
+        .logout-btn { background: #e74c3c; color: white; width: 100%; padding: 14px; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="box" id="content" style="display:none;">
+    <div class="user-profile">
+        <img id="shopLogoPreview" src="https://via.placeholder.com/100" alt="Logo">
+        <h3 id="shopNameDisplay">লোড হচ্ছে...</h3>
+    </div>
+    <h2>সেলার ড্যাশবোর্ড</h2>
+    
+    <div class="info-item"><label>দোকানের নাম</label><div class="data-val" id="shopName">...</div></div>
+    <div class="info-item"><label>ইমেইল</label><div class="data-val" id="email">...</div></div>
+    <div class="info-item"><label>ফোন নাম্বার (WhatsApp)</label><div class="data-val" id="phone">...</div></div>
+
+    <div class="btn-container">
+        <!-- এখানে আপনার রিসিপ্ট তৈরির পেজের লিংক বসান -->
+        <a href="generate.html" class="receipt-btn"><i class="fas fa-file-invoice"></i> রিসিপ্ট তৈরি করুন</a>
+        <button class="logout-btn" onclick="signOutUser()">লগ আউট করুন</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const app = initializeApp({ apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE", projectId: "ghotimarket" });
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    window.signOutUser = () => signOut(auth).then(() => window.location.href = "login.html");
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) window.location.href = "login.html";
+        else {
+            const snap = await getDoc(doc(db, "users", user.uid));
+            if (snap.exists()) {
+                const d = snap.data();
+                document.getElementById('shopName').innerText = d.shopName;
+                document.getElementById('shopNameDisplay').innerText = d.shopName;
+                document.getElementById('email').innerText = user.email;
+                
+                // এখানে whatsapp ডাটা ফোন নাম্বারের জায়গায় সেট করা হয়েছে
+                document.getElementById('phone').innerText = d.whatsapp || d.phone || "তথ্য নেই";
+                
+                if(d.shopLogo) document.getElementById('shopLogoPreview').src = d.shopLogo;
+                document.getElementById('content').style.display = 'block';
+            }
+        }
+    });
+</script>
+</body>
+</html>
