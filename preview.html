@@ -38,14 +38,68 @@
         .btn-print { background: #d32f2f; color: white; border: none; padding: 15px 40px; cursor: pointer; font-size: 16px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; }  
   
         @media (max-width: 800px) { .invoice-box { transform: scale(0.42); transform-origin: top center; margin-bottom: -150mm; } }  
-        @media print { body { background: white; padding: 0; } .invoice-box { transform: none !important; margin: 0; box-shadow: none; } .btn-print { display: none; } }  
+        @media print { body { background: white; padding: 0; } .invoice-box { transform: none !important; margin: 0; box-shadow: none; } .btn-print { display: none; } } 
+.invoice-box{
+    position: relative;
+    overflow: hidden;
+}
+
+.watermark{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.10; /* যত কম হবে তত হালকা দেখাবে */
+}
+
+.watermark img{
+    width: 420px;
+    height: auto;
+}
+
+.invoice-box > *:not(.watermark){
+    position: relative;
+    z-index: 1;
+}
+
+.signature-section{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:35px;
+}
+
+.signature-box{
+    width:220px;
+    text-align:center;
+}
+
+.signature-box img{
+    width:170px;
+    height:70px;
+    object-fit:contain;
+}
+
+.signature-box .line{
+    border-top:2px solid #000;
+    margin:6px 0;
+}
+
+.signature-box strong{
+    font-size:15px;
+    color:#222;
+}
     </style>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>  
 </head>  
 <body>  
   
 <button class="btn-print" onclick="downloadJPG()">Download JPG</button>
-<div class="invoice-box" id="invoice">  
+<div class="invoice-box" id="invoice">
+<div class="watermark">
+    <img src="https://i.ibb.co.com/RG2hrf3y/background-remove-ghoti-market.png" alt="GHOTI MARKET">
+</div> 
     <div class="top-brand">  
         <img id="logoCircle" src="" class="shop-logo-img">  
         <h2 id="sName" class="shop-name-title"></h2>  
@@ -105,7 +159,6 @@
     <div class="qr-section">
         <img id="qrCode" src="" alt="Customer QR">
     </div>
-
     <!-- Official QR -->
     <div class="qr-section">
         <img id="officialQr" src="" alt="Official QR">
@@ -118,7 +171,12 @@
              class="payment-logo" alt="COD">
     </div>
 </div>
-      
+     <div class="signature-section">
+    <div class="signature-box">
+        <img src="https://i.ibb.co.com/rGBS2w9H/20260721-144634.png" alt="Authorized Signature">
+        <div class="line"></div>
+        <strong>Authorized Signature</strong>
+    </div> 
     <div class="powered-by">Powered by GHOTI MARKET</div>  
       <h1>Thank you for shopping from GHOTI MARKET</h1>  
 </div>  
